@@ -1,0 +1,66 @@
+module Lab6_tb;
+
+    // Parameters
+    parameter CLK_PERIOD = 10; // Clock period in time units
+
+    // Signals
+    logic [3:0] num_input;
+    logic [2:0] sel_input;
+    logic clk, reset, write_enable;
+    logic [7:0] anode_output;
+    logic [6:0] cathode_output;
+
+    // Instantiate the module under test
+    Lab6 dut (
+        .num(num_input),
+        .sel(sel_input),
+        .clk(clk),
+        .reset(reset),
+        .write(write_enable),
+        .anode(anode_output),
+        .cathode(cathode_output)
+    );
+
+    // Clock generation
+    always #CLK_PERIOD clk = ~clk;
+
+    // Test stimulus
+    initial begin
+        // Initialize inputs
+        num_input = 4'b0000;
+        sel_input = 3'b000;
+        reset = 1;
+        write_enable = 0;
+        #50; // Wait for a few clock cycles
+
+        // Deassert reset
+        reset = 0;
+        #50; // Wait for a few clock cycles
+
+        // Perform some test cases
+        num_input = 4'b0001; // Set num_input to 1
+        sel_input = 3'b000;  // Select array_sel[0]
+        write_enable = 1;    // Enable writing to array_sel
+        #10; // Wait for a few clock cycles
+        write_enable = 0;    // Disable writing
+
+        num_input = 4'b0010; // Set num_input to 2
+        sel_input = 3'b001;  // Select array_sel[1]
+        write_enable = 1;    // Enable writing to array_sel
+        #10; // Wait for a few clock cycles
+        write_enable = 0;    // Disable writing
+
+        // Add more test cases as needed
+
+        // Finish simulation after a few clock cycles
+        #100;
+        $finish;
+    end
+
+    // Monitor output signals
+    always @(posedge clk) begin
+        $display("Time %t: cathode_output = %b", $time, cathode_output);
+        // Add more output monitoring as needed
+    end
+
+endmodule
